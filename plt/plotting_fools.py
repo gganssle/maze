@@ -9,7 +9,9 @@ def plot1(state, running_reward, step):
     ax[0].grid()
     plt.colorbar(im, ax=ax[0])
 
-    ax[1].plot(running_reward)
+    cumreward = np.cumsum(np.array(running_reward))
+    #ax[1].plot(running_reward)
+    ax[1].plot(cumreward)
 
     plt.show(block=False)
     plt.pause(.1)
