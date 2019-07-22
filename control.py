@@ -1,21 +1,21 @@
 import numpy as np 
-from env import blank 
+from env import lumpy 
 from env import reward
 from env import discount
 from agnt import random, min
 from plt import plotting_fools
 
 plot = True
-num_games = 3
-max_iter = 20
+num_games = 10
+max_iter = 40
 
-actor = random.agent()
-#actor = min.agent()
+#actor = random.agent()
+actor = min.agent()
 rwrd = reward.score()
 dcount = discount.disc()
 
 for game in range(num_games):
-        env = blank.world(gridsize=10)        
+        env = lumpy.world(gridsize=20)        
 
         state = env.initial_state
         cursor = env.cursor
@@ -33,7 +33,7 @@ for game in range(num_games):
                 running_reward.append(local_reward)
 
                 if plot:
-                        plotting_fools.plot1(state, running_reward, i)
+                        plotting_fools.plot1(state, running_reward, i, cursor)
                 
                 if np.amin(cursor == env.end) == True:
                         print(running_reward)
@@ -43,3 +43,5 @@ for game in range(num_games):
                 if i == max_iter - 1:
                         print(running_reward)
                         print(dcount.linear(running_reward))
+
+                
