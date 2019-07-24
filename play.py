@@ -37,12 +37,6 @@ for game in range(num_games):
                         plotting_fools.plot1(state, running_reward, i, cursor)
                 
                 if np.amin(cursor == env.end) == True:
-                        print(running_reward)
-                        print(dcount.expcoef(running_reward))
                         break
-
-                if i == max_iter - 1:
-                        print(running_reward)
-                        print(dcount.expcoef(running_reward))
 
                 

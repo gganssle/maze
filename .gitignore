@@ -1,0 +1,4 @@
+dat/*
+dat/checkpoints/*
+
+agnt/__pycache__/*
