@@ -36,7 +36,7 @@ for game in trange(num_games):
     
     # for time step 1
     state1, cursor1 = env.get_state(state, cursor, optionswords[action])
-    local_reward1 = rwrd.endonly(cursor1, env.end)
+    local_reward1 = rwrd.dontstandstill(cursor1, env.end)
 
     q_vals1 = actor.decision(state1, cursor1, env.end, [local_reward1])
     action1 = np.argmax(q_vals1.data.numpy())
@@ -57,5 +57,8 @@ for game in trange(num_games):
     state = state1
     cursor = cursor1 
     local_reward = local_reward1
+
+  if game % 100 == 0:
+    torch.save(actor.model.state_dict(), model_checkpoint)
 
 torch.save(actor.model.state_dict(), model_checkpoint)
