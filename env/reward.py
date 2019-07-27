@@ -24,3 +24,15 @@ class score(object):
         self.oldcursor = cursor.copy()
 
         return reward
+
+    def positivemoves(self, cursor, end):
+        if np.amin(cursor == end) == True:
+            reward = 1
+        elif np.amin(cursor == self.oldcursor) == False:
+            reward = 0.01
+        else:
+            reward = 0
+
+        self.oldcursor = cursor.copy()
+
+        return reward

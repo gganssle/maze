@@ -4,3 +4,5 @@ dat/checkpoints/*
 agnt/__pycache__/*
 
 env/__pycache__/*
+
+plt/__pycache__/*

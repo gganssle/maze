@@ -22,7 +22,7 @@ class net(nn.Module):
 
 class agent(object):
     def __init__(self, train=False):
-        model_checkpoint = '/Users/gram/maze/dat/checkpoints/201907242032'
+        model_checkpoint = '/Users/gram/maze/dat/checkpoints/temp'
         self.train = train
         self.discount_factor = 0.9
 

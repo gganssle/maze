@@ -4,17 +4,22 @@ import torch.nn as nn
 from agnt import ffnn 
 from env import lumpy, reward, discount
 from tqdm import trange
+from plt import plotting_fools
 
 actor = ffnn.agent(train=True)
 actor.model.train()
 
+egreedy = False
+eperc = [.05, .95]
+
 optionswords = ['left', 'right', 'up', 'down']
 plot = True
-num_games = 1000
+num_games = 10000
 max_iter = 40
 discount_factor = 0.9
 learning_rate = 0.001
 model_checkpoint = f'/Users/gram/maze/dat/checkpoints/temp'
+loss_history = np.array([])
 
 criterion = nn.MSELoss()
 optimizer = torch.optim.SGD(actor.model.parameters(), lr=learning_rate)
@@ -32,22 +37,43 @@ for game in trange(num_games):
   for i in range(max_iter):
     # for time step 0
     q_vals = actor.decision(state, cursor, env.end, [local_reward])
-    action = np.argmax(q_vals.data.numpy())
-    
+    if egreedy:
+      action = np.random.choice(
+          [np.argmax(q_vals.data.numpy()),
+          np.random.randint(0,4)
+          ], 
+          p=eperc
+        )
+    else:
+      action = np.argmax(q_vals.data.numpy())
+
     # for time step 1
-    state1, cursor1 = env.get_state(state, cursor, optionswords[action])
-    local_reward1 = rwrd.dontstandstill(cursor1, env.end)
+    state1, cursor1 = env.get_state(state.copy(), cursor.copy(), optionswords[action])
+    #local_reward1 = rwrd.dontstandstill(cursor1, env.end)
+    #local_reward1 = rwrd.endonly(cursor1, env.end)
+    local_reward1 = rwrd.positivemoves(cursor1, env.end)
 
     q_vals1 = actor.decision(state1, cursor1, env.end, [local_reward1])
-    action1 = np.argmax(q_vals1.data.numpy())
+    if egreedy:
+      action1 = np.random.choice(
+          [np.argmax(q_vals1.data.numpy()),
+          np.random.randint(0,4)
+          ], 
+          p=eperc
+        )
+    else:
+      action1 = np.argmax(q_vals1.data.numpy())
 
     # calculate target
-    targetele = local_reward + discount_factor * q_vals[action1]
+    targetele = local_reward + discount_factor * q_vals1[action1]
     target = q_vals.clone()
     target[action] = targetele
 
     # backpropagate errors
+    print(q_vals)
+    print(target, '\n')
     loss = criterion(q_vals, target)
+    loss_history = np.append(loss_history, loss.data.numpy())
 
     optimizer.zero_grad()
     loss.backward()
@@ -55,10 +81,18 @@ for game in trange(num_games):
 
     # step the game
     state = state1
-    cursor = cursor1 
+    cursor = cursor1
     local_reward = local_reward1
 
-  if game % 100 == 0:
+    #if np.amin(cursor == env.end) == True:
+    #  print('hit finishing pad')
+
+    # TODO: do i need a diff target calc for the terminal state?
+
+    # TODO: ha! I haven't specified an end of game. Potensch not a prob, since the reward will keep increasing as the agent steps off the end pad, and back on.
+
+  if game % 1000 == 0:
     torch.save(actor.model.state_dict(), model_checkpoint)
+    np.save('dat/loss_hist.npy', loss_history)
 
 torch.save(actor.model.state_dict(), model_checkpoint)

@@ -18,13 +18,13 @@ class world(object):
         tmpcursor = cursor.copy()
 
         # take action
-        if action == 'left':
+        if action == 'down':
             tmpcursor[0] += 1
-        elif action == 'right':
-            tmpcursor[0] -= 1
         elif action == 'up':
+            tmpcursor[0] -= 1
+        elif action == 'right':
             tmpcursor[1] += 1
-        elif action == 'down':
+        elif action == 'left':
             tmpcursor[1] -= 1
         else:
             raise ValueError
@@ -41,6 +41,6 @@ class world(object):
             cursor[1] = tmpcursor[1]
 
         # write an action trail
-        state[cursor[0], cursor[1]] += 1
+        #state[cursor[0], cursor[1]] += 1
 
         return state, cursor

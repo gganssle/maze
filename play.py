@@ -32,11 +32,12 @@ for game in range(num_games):
 
                 state, cursor = env.get_state(state, cursor, action)
 
-                local_reward = rwrd.dontstandstill(cursor, env.end)
+                #local_reward = rwrd.dontstandstill(cursor, env.end)
+                local_reward = rwrd.positivemoves(cursor, env.end)
                 running_reward.append(local_reward)
 
                 if plot:
-                        plotting_fools.plot1(state, running_reward, i, cursor)
+                        plotting_fools.plot1(state, running_reward, i, cursor, action)
                 
                 if np.amin(cursor == env.end) == True:
                         print(running_reward)
