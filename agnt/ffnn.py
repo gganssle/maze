@@ -16,7 +16,7 @@ class net(nn.Module):
         x = self.relu1(self.dense1(x))
         x = self.relu2(self.dense2(x))
         x = self.dense3(x)
-
+        
         return x
 
 
@@ -24,7 +24,6 @@ class agent(object):
     def __init__(self, train=False):
         model_checkpoint = '/Users/gram/maze/dat/checkpoints/temp'
         self.train = train
-        self.discount_factor = 0.9
 
         self.model = net()
         self.model.train()

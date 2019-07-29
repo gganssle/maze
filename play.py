@@ -32,8 +32,8 @@ for game in range(num_games):
 
                 state, cursor = env.get_state(state, cursor, action)
 
-                #local_reward = rwrd.dontstandstill(cursor, env.end)
-                local_reward = rwrd.positivemoves(cursor, env.end)
+                local_reward = rwrd.dontstandstill(cursor, env.end)
+                #local_reward = rwrd.positivemoves(cursor, env.end)
                 running_reward.append(local_reward)
 
                 if plot:

@@ -36,3 +36,9 @@ class score(object):
         self.oldcursor = cursor.copy()
 
         return reward
+
+    def distance(self, cursor, end):
+        reward = np.linalg.norm(cursor - end)
+        reward = 1 / reward
+
+        return reward

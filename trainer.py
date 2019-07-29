@@ -4,20 +4,19 @@ import torch.nn as nn
 from agnt import ffnn 
 from env import lumpy, reward, discount
 from tqdm import trange
-from plt import plotting_fools
 
 actor = ffnn.agent(train=True)
 actor.model.train()
 
 egreedy = False
-eperc = [.05, .95]
+eperc = [.0001, .9999]
 
 optionswords = ['left', 'right', 'up', 'down']
 plot = True
-num_games = 10000
-max_iter = 40
+num_games = 10
+max_iter = 100
 discount_factor = 0.9
-learning_rate = 0.001
+learning_rate = 0.1
 model_checkpoint = f'/Users/gram/maze/dat/checkpoints/temp'
 loss_history = np.array([])
 
@@ -49,9 +48,10 @@ for game in trange(num_games):
 
     # for time step 1
     state1, cursor1 = env.get_state(state.copy(), cursor.copy(), optionswords[action])
-    #local_reward1 = rwrd.dontstandstill(cursor1, env.end)
+    #local_reward1 = rwrd.distance(cursor1, env.end)
+    local_reward1 = rwrd.dontstandstill(cursor1, env.end)
     #local_reward1 = rwrd.endonly(cursor1, env.end)
-    local_reward1 = rwrd.positivemoves(cursor1, env.end)
+    #local_reward1 = rwrd.positivemoves(cursor1, env.end)
 
     q_vals1 = actor.decision(state1, cursor1, env.end, [local_reward1])
     if egreedy:
@@ -70,8 +70,9 @@ for game in trange(num_games):
     target[action] = targetele
 
     # backpropagate errors
+    print(cursor, local_reward, local_reward1)
     print(q_vals)
-    print(target, '\n')
+    print(q_vals1)
     loss = criterion(q_vals, target)
     loss_history = np.append(loss_history, loss.data.numpy())
 
