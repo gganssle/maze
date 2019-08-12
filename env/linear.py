@@ -26,7 +26,7 @@ class world(object):
             raise ValueError
 
         # ensure cursor is on the playing field
-        if (tmpcursor[0] < 4) & (tmpcursor[0] >= 0):
+        if (tmpcursor[0] < 5) & (tmpcursor[0] >= 0):
             cursor = tmpcursor
 
         # write an action trail

@@ -13,7 +13,7 @@ eperc = [.0001, .9999]
 
 optionswords = ['left', 'right', 'sit']
 plot = True
-num_games = 10
+num_games = 100000
 max_iter = 20
 discount_factor = 0.9
 learning_rate = 0.01
@@ -48,7 +48,7 @@ for game in trange(num_games):
 
     # for time step 1
     state1, cursor1 = env.get_state(state.copy(), cursor.copy(), optionswords[action])
-    #local_reward1 = rwrd.distance(cursor1, env.end)
+    #local_reward1 = rwrd.distance(np.array(cursor1), env.end)
     local_reward = rwrd.dontstandstill(cursor1, env.end)
     #local_reward1 = rwrd.endonly(cursor1, env.end)
     #local_reward1 = rwrd.positivemoves(cursor1, env.end)
@@ -70,10 +70,10 @@ for game in trange(num_games):
     target[action] = targetele
 
     # backpropagate errors
-    print(cursor, env.end, local_reward, optionswords[action1])
-    print(q_vals)
-    print(q_vals1)
-    print(target)
+    #print(cursor, env.end, local_reward, optionswords[action1])
+    #print(q_vals)
+    #print(q_vals1)
+    #print(target)
     loss = criterion(q_vals, target)
     loss_history = np.append(loss_history, loss.data.numpy())
 
@@ -84,13 +84,6 @@ for game in trange(num_games):
     # step the game
     state = state1
     cursor = cursor1
-
-    #if np.amin(cursor == env.end) == True:
-    #  print('\n\nhit finishing pad\n\n')
-
-    # TODO: do i need a diff target calc for the terminal state?
-
-    # TODO: ha! I haven't specified an end of game. Potensch not a prob, since the reward will keep increasing as the agent steps off the end pad, and back on.
 
   if game % 1000 == 0:
     torch.save(actor.model.state_dict(), model_checkpoint)
