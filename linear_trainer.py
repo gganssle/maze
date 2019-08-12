@@ -1,20 +1,20 @@
 import numpy as np 
 import torch
 import torch.nn as nn
-from agnt import ffnn 
-from env import lumpy, reward, discount
+from agnt import linear_ffnn
+from env import linear, reward, discount
 from tqdm import trange
 
-actor = ffnn.agent(train=True)
+actor = linear_ffnn.agent(train=True)
 actor.model.train()
 
-egreedy = True
+egreedy = False
 eperc = [.0001, .9999]
 
-optionswords = ['left', 'right', 'up', 'down']
+optionswords = ['left', 'right', 'sit']
 plot = True
-num_games = 1000
-max_iter = 40
+num_games = 10
+max_iter = 20
 discount_factor = 0.9
 learning_rate = 0.01
 model_checkpoint = f'/Users/gram/maze/dat/checkpoints/temp'
@@ -27,7 +27,7 @@ rwrd = reward.score()
 dcount = discount.disc()
 
 for game in trange(num_games):
-  env = lumpy.world()        
+  env = linear.world()        
 
   state = env.initial_state
   cursor = env.cursor
@@ -39,7 +39,7 @@ for game in trange(num_games):
     if egreedy:
       action = np.random.choice(
           [np.argmax(q_vals.data.numpy()),
-          np.random.randint(0,4)
+          np.random.randint(0,3)
           ], 
           p=eperc
         )
@@ -53,12 +53,11 @@ for game in trange(num_games):
     #local_reward1 = rwrd.endonly(cursor1, env.end)
     #local_reward1 = rwrd.positivemoves(cursor1, env.end)
 
-    #q_vals1 = actor.decision(state1, cursor1, env.end, [local_reward1])
     q_vals1 = actor.decision(state1, cursor1, env.end, [local_reward])
     if egreedy:
       action1 = np.random.choice(
           [np.argmax(q_vals1.data.numpy()),
-          np.random.randint(0,4)
+          np.random.randint(0,3)
           ], 
           p=eperc
         )
@@ -71,7 +70,6 @@ for game in trange(num_games):
     target[action] = targetele
 
     # backpropagate errors
-    #print(cursor, local_reward, local_reward1)
     print(cursor, env.end, local_reward, optionswords[action1])
     print(q_vals)
     print(q_vals1)
@@ -86,10 +84,9 @@ for game in trange(num_games):
     # step the game
     state = state1
     cursor = cursor1
-    #local_reward = local_reward1
 
-    if np.amin(cursor == env.end) == True:
-      print('\n\nhit finishing pad\n\n')
+    #if np.amin(cursor == env.end) == True:
+    #  print('\n\nhit finishing pad\n\n')
 
     # TODO: do i need a diff target calc for the terminal state?
 

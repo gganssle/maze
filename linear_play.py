@@ -1,20 +1,24 @@
 import numpy as np 
-from env import lumpy, reward, discount
-from agnt import rand, min, ffnn
-from plt import plotting_fools
+#from env import lumpy, reward, discount
+from env import linear, reward, discount
+from agnt import rand, min, ffnn, linear_ffnn
+from plt import plotting_fools, linear_plotting_tools
 
-plot = True
-num_games = 10
-max_iter = 40
+plot = False
+num_games = 1000
+max_iter = 5
+win_hist = []
 
 #actor1 = rand.agent()
 #actor2 = min.agent()
-actor = ffnn.agent()
+#actor = ffnn.agent()
+actor = linear_ffnn.agent()
 rwrd = reward.score()
 dcount = discount.disc()
 
 for game in range(num_games):
-        env = lumpy.world(gridsize=10)        
+        #env = lumpy.world(gridsize=10)        
+        env = linear.world()
 
         state = env.initial_state
         cursor = env.cursor
@@ -22,8 +26,6 @@ for game in range(num_games):
 
         running_reward = [0]
         discounted_reward = dcount.expcoef(running_reward)
-
-        print('game number:', game)
 
         for i in range(max_iter):
                 #actor = np.random.choice([actor1, actor2])
@@ -37,12 +39,17 @@ for game in range(num_games):
                 running_reward.append(local_reward)
 
                 if plot:
-                        plotting_fools.plot1(state, running_reward, i, cursor, action)
+                        #plotting_fools.plot1(state, running_reward, i, cursor, action)
+                        linear_plotting_tools.plot1(state, running_reward, i, cursor, action)
                         
                 if np.amin(cursor == env.end) == True:
-                        print(running_reward)
+                        win_hist.append(1)
                         break
 
                 if i == max_iter - 1:
-                        print(running_reward)
-                
+                        win_hist.append(0)
+           
+win_hist = np.array(win_hist)
+win_perc = 100 * np.nonzero(win_hist)[0].shape[0] / num_games
+
+print(f'agent won {win_perc}% of the games')

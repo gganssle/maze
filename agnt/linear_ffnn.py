@@ -6,11 +6,11 @@ import torch.nn as nn
 class net(nn.Module):
     def __init__(self):
         super(net, self).__init__()
-        self.dense1 = nn.Linear(100+2+2+1, 200)
+        self.dense1 = nn.Linear(5+1+1+1, 200)
         self.relu1 = nn.LeakyReLU(True)
         self.dense2 = nn.Linear(200, 50)
         self.relu2 = nn.LeakyReLU(True)
-        self.dense3 = nn.Linear(50, 4)
+        self.dense3 = nn.Linear(50, 3)
 
     def forward(self, x):
         x = self.relu1(self.dense1(x))
@@ -34,7 +34,7 @@ class agent(object):
 
 
     def decision(self, state, cursor, end, reward):
-        optionswords = ['left', 'right', 'up', 'down']
+        optionswords = ['left', 'right', 'sit']
 
         if self.train == False:
             total_state = torch.cat((
